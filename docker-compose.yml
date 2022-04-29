@@ -1,0 +1,33 @@
+services:
+
+  postgres:
+      image: postgres:14
+      volumes:
+        - ./db:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  keycloak:
+      build: .
+      command: ["start"]
+      volumes:
+        - ./certs/fullchain.crt:/opt/keycloak/conf/fullchain.crt
+        - ./certs/privkey.key:/opt/keycloak/conf/privkey.key
+      ports:
+        - 8443:8443
+      environment:
+        KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/fullchain.crt
+        KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/privkey.key
+        KC_HOSTNAME: ${KC_HOSTNAME}
+        KC_DB_URL: ${KC_DB_URL}
+        KC_DB_SCHEMA: ${KC_DB_SCHEMA}
+        KC_DB_USERNAME: ${KC_DB_USERNAME}
+        KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+        KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+        KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      depends_on:
+        - postgres
+ 
